@@ -1,0 +1,1 @@
+Primary color: #FF375C
