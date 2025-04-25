@@ -1,14 +1,23 @@
 'use client'
 import React, { useState } from 'react';
 import DatePicker from './DatePicker';
+import DestinationSuggestions from './DestinationSuggestions';
 import { format } from 'date-fns';
 
 const SearchBar = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [isDestinationSuggestionsOpen, setIsDestinationSuggestionsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
   
   const toggleDatePicker = () => {
     setIsDatePickerOpen(!isDatePickerOpen);
+    setIsDestinationSuggestionsOpen(false);
+  };
+
+  const toggleDestinationSuggestions = () => {
+    setIsDestinationSuggestionsOpen(!isDestinationSuggestionsOpen);
+    setIsDatePickerOpen(false);
   };
 
   // Handle date selection from DatePicker
@@ -17,9 +26,20 @@ const SearchBar = () => {
     setIsDatePickerOpen(false); // Close the date picker when a date is selected
   };
 
+  // Handle location selection from DestinationSuggestions
+  const handleLocationSelect = (location: string) => {
+    setSelectedLocation(location);
+    setIsDestinationSuggestionsOpen(false); // Close the suggestions when a location is selected
+  };
+
   // Close the date picker
   const handleCloseDatePicker = () => {
     setIsDatePickerOpen(false);
+  };
+
+  // Close the destination suggestions
+  const handleCloseDestinationSuggestions = () => {
+    setIsDestinationSuggestionsOpen(false);
   };
 
   return (
@@ -41,6 +61,9 @@ const SearchBar = () => {
             type="text" 
             placeholder="Location" 
             className="w-full outline-none text-gray-600"
+            value={selectedLocation}
+            onChange={(e) => setSelectedLocation(e.target.value)}
+            onClick={toggleDestinationSuggestions}
           />
           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-2/3 bg-gray-200"></div>
         </div>
@@ -67,6 +90,15 @@ const SearchBar = () => {
           isOpen={isDatePickerOpen}
           onDateSelect={handleDateSelect}
           onClose={handleCloseDatePicker}
+        />
+      </div>
+
+      {/* Destination Suggestions */}
+      <div className="relative">
+        <DestinationSuggestions
+          isOpen={isDestinationSuggestionsOpen}
+          onSelect={handleLocationSelect}
+          onClose={handleCloseDestinationSuggestions}
         />
       </div>
     </div>
