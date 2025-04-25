@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { DayPicker } from 'react-day-picker';
-import { format, isBefore, startOfDay } from 'date-fns';
+import { format, isBefore, isAfter, startOfDay, addYears } from 'date-fns';
 import 'react-day-picker/dist/style.css';
 
 interface DatePickerProps {
@@ -27,10 +27,12 @@ const DatePicker: React.FC<DatePickerProps> = ({ isOpen, onDateSelect }) => {
   // Get current date for initial display
   const now = new Date();
   const today = startOfDay(now);
+  // Calculate maximum date (1 year from today)
+  const maxDate = addYears(today, 1);
   
-  // Disable past dates
-  const isPastDate = (date: Date) => {
-    return isBefore(date, today);
+  // Disable dates that are either in the past or more than a year in future
+  const isDateDisabled = (date: Date) => {
+    return isBefore(date, today) || isAfter(date, maxDate);
   };
 
   const customStyles = `
@@ -78,9 +80,12 @@ const DatePicker: React.FC<DatePickerProps> = ({ isOpen, onDateSelect }) => {
             today: "font-bold",
             disabled: "text-gray-300"
           }}
-          disabled={isPastDate}
+          disabled={isDateDisabled}
           fromDate={today}
-          footer={selected ? `${format(selected, 'PP')}` : "Please select a future date"}
+          toDate={maxDate}
+          footer={selected 
+            ? `${format(selected, 'PP')}` 
+            : "Please select a date within the next year"}
         />
       </div>
     </div>
