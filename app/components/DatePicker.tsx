@@ -61,6 +61,9 @@ const DatePicker: React.FC<DatePickerProps> = ({ isOpen, onDateSelect, onClose }
       --rdp-cell-size: 40px;
       margin: 0;
     }
+    .rdp-chevron {
+      fill: #FF375C !important;
+    }
     .rdp-caption {
       padding-bottom: 16px;
     }
@@ -109,7 +112,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ isOpen, onDateSelect, onClose }
           toDate={maxDate}
           footer={selected 
             ? `${format(selected, 'PP')}` 
-            : "Please select a date within the next year"}
+            : ""}
         />
       </div>
     </div>
