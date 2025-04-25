@@ -17,6 +17,11 @@ const SearchBar = () => {
     setIsDatePickerOpen(false); // Close the date picker when a date is selected
   };
 
+  // Close the date picker
+  const handleCloseDatePicker = () => {
+    setIsDatePickerOpen(false);
+  };
+
   return (
     <div className="w-[58%] mx-auto my-9">
       <div className="flex items-center rounded-full bg-white shadow-md overflow-hidden border border-gray-200">
@@ -61,6 +66,7 @@ const SearchBar = () => {
         <DatePicker 
           isOpen={isDatePickerOpen}
           onDateSelect={handleDateSelect}
+          onClose={handleCloseDatePicker}
         />
       </div>
     </div>

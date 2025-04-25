@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { format, isBefore, isAfter, startOfDay, addYears } from 'date-fns';
 import 'react-day-picker/dist/style.css';
@@ -7,10 +7,31 @@ import 'react-day-picker/dist/style.css';
 interface DatePickerProps {
   isOpen: boolean;
   onDateSelect?: (date: Date) => void;
+  onClose?: () => void;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ isOpen, onDateSelect }) => {
+const DatePicker: React.FC<DatePickerProps> = ({ isOpen, onDateSelect, onClose }) => {
   const [selected, setSelected] = useState<Date | undefined>(undefined);
+  const datePickerRef = useRef<HTMLDivElement>(null);
+  
+  // Handle clicks outside the date picker
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node) && onClose) {
+        onClose();
+      }
+    };
+    
+    // Add event listener when the picker is open
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    // Clean up the event listener on unmount or when isOpen changes
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
   
   // Handle date selection
   const handleSelect = (date: Date | undefined) => {
@@ -59,7 +80,10 @@ const DatePicker: React.FC<DatePickerProps> = ({ isOpen, onDateSelect }) => {
   `;
 
   return (
-    <div className="absolute top-full left-0 mt-3 bg-white rounded-3xl shadow-lg p-6 w-full z-10">
+    <div 
+      ref={datePickerRef}
+      className="absolute top-full left-0 mt-3 bg-white rounded-3xl shadow-lg p-6 w-full z-10"
+    >
       {/* Custom styles */}
       <style>{customStyles}</style>
 
