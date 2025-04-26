@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, ChangeEvent } from 'react';
 import DatePicker from './DatePicker';
-import DestinationSuggestions from './DestinationSuggestions';
+import BusinessLocation from './BusinessLocation';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -11,21 +11,21 @@ interface SearchBarProps {
 
 const SearchBar = ({ isMobile = false }: SearchBarProps) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [isDestinationSuggestionsOpen, setIsDestinationSuggestionsOpen] = useState(false);
+  const [isBusinessLocationOpen, setIsBusinessLocationOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [activeInput, setActiveInput] = useState<string | null>(null);
   
   const toggleDatePicker = () => {
     setIsDatePickerOpen(!isDatePickerOpen);
-    setIsDestinationSuggestionsOpen(false);
+    setIsBusinessLocationOpen(false);
     setActiveInput(isDatePickerOpen ? null : 'date');
   };
 
-  const toggleDestinationSuggestions = () => {
-    setIsDestinationSuggestionsOpen(!isDestinationSuggestionsOpen);
+  const toggleBusinessLocation = () => {
+    setIsBusinessLocationOpen(!isBusinessLocationOpen);
     setIsDatePickerOpen(false);
-    setActiveInput(isDestinationSuggestionsOpen ? null : 'location');
+    setActiveInput(isBusinessLocationOpen ? null : 'location');
   };
 
   // Handle date selection from DatePicker
@@ -35,10 +35,10 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
     setActiveInput(null);
   };
 
-  // Handle location selection from DestinationSuggestions
+  // Handle location selection from BusinessLocation
   const handleLocationSelect = (location: string) => {
     setSelectedLocation(location);
-    setIsDestinationSuggestionsOpen(false);
+    setIsBusinessLocationOpen(false);
     setActiveInput(null);
   };
 
@@ -53,9 +53,9 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
     setActiveInput(null);
   };
 
-  // Close the destination suggestions
-  const handleCloseDestinationSuggestions = () => {
-    setIsDestinationSuggestionsOpen(false);
+  // Close the business location suggestions
+  const handleCloseBusinessLocation = () => {
+    setIsBusinessLocationOpen(false);
     setActiveInput(null);
   };
 
@@ -66,7 +66,7 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
         <motion.div 
           className="relative"
           animate={{ 
-            scale: isDestinationSuggestionsOpen ? 1.02 : 1 
+            scale: isBusinessLocationOpen ? 1.02 : 1 
           }}
           transition={{ type: "spring", bounce: 0.2 }}
         >
@@ -79,28 +79,28 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
             <input 
               type="text" 
               placeholder="Look for services" 
-              className={`w-full py-3 pl-12 pr-4 bg-[#f7f7f7] outline-none text-gray-600 text-sm rounded-full transition-all duration-300 ${isDestinationSuggestionsOpen ? 'ring-2 ring-pink-200' : ''}`}
+              className={`w-full py-3 pl-12 pr-4 bg-[#f7f7f7] outline-none text-gray-600 text-sm rounded-full transition-all duration-300 ${isBusinessLocationOpen ? 'ring-2 ring-pink-200' : ''}`}
               value={selectedLocation}
               onChange={handleLocationChange}
-              onClick={toggleDestinationSuggestions}
+              onClick={toggleBusinessLocation}
             />
           </div>
         </motion.div>
 
-        {/* Destination Suggestions for Mobile */}
+        {/* Business Location for Mobile */}
         <div className="relative">
           <AnimatePresence>
-            {isDestinationSuggestionsOpen && (
+            {isBusinessLocationOpen && (
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
               >
-                <DestinationSuggestions
-                  isOpen={isDestinationSuggestionsOpen}
+                <BusinessLocation
+                  isOpen={isBusinessLocationOpen}
                   onSelect={handleLocationSelect}
-                  onClose={handleCloseDestinationSuggestions}
+                  onClose={handleCloseBusinessLocation}
                 />
               </motion.div>
             )}
@@ -138,7 +138,7 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
             className={`w-full outline-none text-gray-600 text-sm sm:text-base ${activeInput === 'location' ? 'text-pink-500' : ''}`}
             value={selectedLocation}
             onChange={handleLocationChange}
-            onClick={toggleDestinationSuggestions}
+            onClick={toggleBusinessLocation}
             whileFocus={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           />
@@ -190,20 +190,20 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
         </AnimatePresence>
       </div>
 
-      {/* Destination Suggestions */}
+      {/* Business Location */}
       <div className="relative">
         <AnimatePresence>
-          {isDestinationSuggestionsOpen && (
+          {isBusinessLocationOpen && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
             >
-              <DestinationSuggestions
-                isOpen={isDestinationSuggestionsOpen}
+              <BusinessLocation
+                isOpen={isBusinessLocationOpen}
                 onSelect={handleLocationSelect}
-                onClose={handleCloseDestinationSuggestions}
+                onClose={handleCloseBusinessLocation}
               />
             </motion.div>
           )}

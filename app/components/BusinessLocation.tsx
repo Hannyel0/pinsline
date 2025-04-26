@@ -9,7 +9,7 @@ interface Destination {
   icon: React.ReactNode;
 }
 
-interface DestinationSuggestionsProps {
+interface BusinessLocationProps {
   isOpen: boolean;
   onSelect: (destination: string) => void;
   onClose: () => void;
@@ -28,7 +28,7 @@ interface GeolocationResponse {
   error?: string;
 }
 
-const DestinationSuggestions = ({ isOpen, onSelect, onClose }: DestinationSuggestionsProps) => {
+const BusinessLocation = ({ isOpen, onSelect, onClose }: BusinessLocationProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   
@@ -148,4 +148,4 @@ const DestinationSuggestions = ({ isOpen, onSelect, onClose }: DestinationSugges
   );
 };
 
-export default DestinationSuggestions; 
+export default BusinessLocation; 
