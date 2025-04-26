@@ -1,9 +1,11 @@
 'use client'
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
 import DatePicker from './DatePicker';
 import BusinessLocation from './BusinessLocation';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
+
+type TimePeriod = 'Morning' | 'Afternoon' | 'Evening' | 'Anytime' | null;
 
 interface SearchBarProps {
   isMobile?: boolean;
@@ -12,25 +14,58 @@ interface SearchBarProps {
 const SearchBar = ({ isMobile = false }: SearchBarProps) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isBusinessLocationOpen, setIsBusinessLocationOpen] = useState(false);
+  const [isServicesModalOpen, setIsServicesModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState<TimePeriod>(null);
   const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const [selectedService, setSelectedService] = useState<string>('');
   const [activeInput, setActiveInput] = useState<string | null>(null);
+  const servicesModalRef = useRef<HTMLDivElement>(null);
+  
+  // Handle clicks outside the services modal
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (servicesModalRef.current && !servicesModalRef.current.contains(event.target as Node)) {
+        handleCloseServicesModal();
+      }
+    };
+    
+    // Add event listener when the services modal is open
+    if (isServicesModalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isServicesModalOpen]);
   
   const toggleDatePicker = () => {
     setIsDatePickerOpen(!isDatePickerOpen);
     setIsBusinessLocationOpen(false);
+    setIsServicesModalOpen(false);
     setActiveInput(isDatePickerOpen ? null : 'date');
   };
 
   const toggleBusinessLocation = () => {
     setIsBusinessLocationOpen(!isBusinessLocationOpen);
     setIsDatePickerOpen(false);
+    setIsServicesModalOpen(false);
     setActiveInput(isBusinessLocationOpen ? null : 'location');
   };
 
+  const toggleServicesModal = () => {
+    setIsServicesModalOpen(!isServicesModalOpen);
+    setIsDatePickerOpen(false);
+    setIsBusinessLocationOpen(false);
+    setActiveInput(isServicesModalOpen ? null : 'services');
+  };
+
   // Handle date selection from DatePicker
-  const handleDateSelect = (date: Date) => {
+  const handleDateSelect = (date: Date, timePeriod: TimePeriod) => {
     setSelectedDate(date);
+    setSelectedTimePeriod(timePeriod);
     setIsDatePickerOpen(false);
     setActiveInput(null);
   };
@@ -42,9 +77,20 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
     setActiveInput(null);
   };
 
+  // Handle service selection
+  const handleServiceSelect = (service: string) => {
+    setSelectedService(service);
+    setIsServicesModalOpen(false);
+    setActiveInput(null);
+  };
+
   // Handle input change
   const handleLocationChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSelectedLocation(e.target.value);
+  };
+
+  const handleServiceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSelectedService(e.target.value);
   };
 
   // Close the date picker
@@ -57,6 +103,23 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
   const handleCloseBusinessLocation = () => {
     setIsBusinessLocationOpen(false);
     setActiveInput(null);
+  };
+
+  // Close the services modal
+  const handleCloseServicesModal = () => {
+    setIsServicesModalOpen(false);
+    setActiveInput(null);
+  };
+
+  // Get formatted date and time display
+  const getDateTimeDisplay = () => {
+    if (!selectedDate) return 'Date';
+    
+    let display = format(selectedDate, 'PP');
+    if (selectedTimePeriod) {
+      display += ` · ${selectedTimePeriod}`;
+    }
+    return display;
   };
 
   // Mobile search bar layout
@@ -121,16 +184,24 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
         }}
         transition={{ type: "spring", bounce: 0.2 }}
       >
-        <div className="w-full sm:w-auto sm:flex-1 px-4 sm:px-6 py-3 relative border-b sm:border-b-0 sm:border-r border-gray-200">
+        <div className="w-full sm:w-auto sm:flex-1 px-4 sm:px-6 py-3 relative border-b sm:border-b-0">
           <div className="text-xs sm:text-sm font-medium">Services or business</div>
-          <input 
+          <motion.input 
             type="text" 
             placeholder="What are you looking for?" 
-            className="w-full outline-none text-gray-600 text-sm sm:text-base"
+            className={`w-full outline-none text-gray-600 text-sm sm:text-base ${activeInput === 'services' ? 'text-pink-500' : ''}`}
+            value={selectedService}
+            onChange={handleServiceChange}
+            onClick={toggleServicesModal}
+            whileFocus={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
           />
         </div>
         
-        <div className="w-full sm:w-auto sm:flex-1 px-4 sm:px-6 py-3 relative border-b sm:border-b-0 sm:border-r border-gray-200">
+        {/* Divider */}
+        <div className="hidden sm:block h-10 w-px bg-gray-200 mx-1"></div>
+        
+        <div className="w-full sm:w-auto sm:flex-1 px-4 sm:px-6 py-3 relative border-b sm:border-b-0">
           <div className="text-xs sm:text-sm font-medium">Where</div>
           <motion.input 
             type="text" 
@@ -144,6 +215,9 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
           />
         </div>
         
+        {/* Divider */}
+        <div className="hidden sm:block h-10 w-px bg-gray-200 mx-1"></div>
+        
         <div className="w-full sm:w-auto sm:flex-1 px-4 sm:px-6 py-3 relative">
           <div className="text-xs sm:text-sm font-medium">When</div>
           <motion.button 
@@ -152,7 +226,7 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
-            {selectedDate ? format(selectedDate, 'PP') : 'Date'}
+            {getDateTimeDisplay()}
           </motion.button>
         </div>
         
@@ -169,6 +243,28 @@ const SearchBar = ({ isMobile = false }: SearchBarProps) => {
           </motion.button>
         </div>
       </motion.div>
+
+      {/* Services Modal */}
+      <div className="relative">
+        <AnimatePresence>
+          {isServicesModalOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            >
+              <div 
+                ref={servicesModalRef}
+                className="absolute z-10 mt-2 w-full bg-white rounded-2xl shadow-lg p-6 max-h-[80vh] overflow-y-auto"
+              >
+                <h3 className="text-lg font-semibold mb-5">Services and businesses</h3>
+                {/* Empty modal content as requested */}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Date Picker */}
       <div className="relative">

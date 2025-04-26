@@ -71,15 +71,15 @@ const BusinessLocation = ({ isOpen, onSelect, onClose }: BusinessLocationProps) 
           onSelect(locationString);
         } else {
           // Fallback if we don't have city information
-          onSelect('Nearby location');
+          onSelect('Close to me');
         }
       } else {
         console.warn('Location API returned success: false', data.error);
-        onSelect('Nearby location');
+        onSelect('Close to me');
       }
     } catch (error) {
       console.error('Error fetching location:', error);
-      onSelect('Nearby location');
+      onSelect('Close to me');
     } finally {
       setIsLoading(false);
     }
@@ -92,8 +92,8 @@ const BusinessLocation = ({ isOpen, onSelect, onClose }: BusinessLocationProps) 
   const destinations: Destination[] = [
     {
       id: 'nearby',
-      name: 'Nearby',
-      description: 'Find what\'s around you',
+      name: 'Close to me',
+      description: 'Find services close to you',
       icon: (
         <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
