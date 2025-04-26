@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 
 interface Destination {
@@ -30,6 +30,26 @@ interface GeolocationResponse {
 
 const DestinationSuggestions = ({ isOpen, onSelect, onClose }: DestinationSuggestionsProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  
+  // Handle clicks outside the suggestions modal
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    
+    // Add event listener when the suggestions are open
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    // Clean up the event listener on unmount or when isOpen changes
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
   
   if (!isOpen) return null;
 
@@ -101,7 +121,10 @@ const DestinationSuggestions = ({ isOpen, onSelect, onClose }: DestinationSugges
   };
 
   return (
-    <div className="absolute z-10 mt-2 w-full bg-white rounded-2xl shadow-lg p-6 max-h-[80vh] overflow-y-auto">
+    <div 
+      ref={suggestionsRef}
+      className="absolute z-10 mt-2 w-full bg-white rounded-2xl shadow-lg p-6 max-h-[80vh] overflow-y-auto"
+    >
       <h3 className="text-lg font-semibold mb-5">Business location</h3>
       <div className="space-y-5">
         {destinations.map((destination) => (
