@@ -39,10 +39,10 @@ export default function Navbar() {
             
             {/* Right side - Login and Set up business buttons */}
             <div className="hidden md:flex items-center space-x-3">
-              <button className="px-4 py-2 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors">
+              <button className="cursor-pointer px-4 py-2 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors">
                 Login
               </button>
-              <button className="px-4 py-2 bg-[#FF375C] text-white rounded-lg font-medium hover:bg-red-600 transition-colors">
+              <button className="cursor-pointer px-4 py-2 bg-[#FF375C] text-white rounded-lg font-medium hover:bg-red-600 transition-colors">
                 Set up my business
               </button>
             </div>
